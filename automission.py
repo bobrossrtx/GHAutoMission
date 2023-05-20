@@ -1,7 +1,6 @@
 import pyautogui as pg
 import tkinter as tk
 import time
-import keyboard
 
 
 # Main Window
