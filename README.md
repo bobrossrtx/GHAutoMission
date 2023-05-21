@@ -6,7 +6,7 @@ This is an automission gui for the in game tool automission in greyhack
 - 1: Open Terminal
 - 2: Run `git clone https://github.com/bobrossrtx/GHAutoMission`
 - 3: Run `cd GHAutoMission`
-- 4: Run `python -m pip install pyautogui`
+- 4: Run `python -m pip install pyautogui opencv-python pillow`
 - 5: Run `python automission.py`
 
 ## Usage:
