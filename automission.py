@@ -1,8 +1,6 @@
 import pyautogui as pg
 import tkinter as tk
 import time
-import keyboard
-
 
 # Main Window
 window = tk.Tk()
@@ -85,45 +83,86 @@ def openpasswordlist():
     savebutton = tk.Button(cancelandsave, text="Save", command=savepasswordlist)
     savebutton.pack(side=tk.LEFT)
 
+def printconsole(console, text):
+    console.insert(tk.END, f"[{time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(time.time()))}]: {text}")
+
+def getTempPosition(template, console):
+    time.sleep(1)
+    position = pg.locateOnScreen(template, grayscale=True, confidence=0.8)
+    printconsole(console, f"{template} Position: {position}\n")
+    return position
+
 def startmailsending():
+
+    title = tk.Label(window, text="Console", font=("Arial", 20, "bold"))
+    title.pack()
+
+    # Console Text
+    consoletext = tk.Text(window, height=40, width=100)
+    consoletext.pack()
+
+    # Make window taller
+    window.geometry("1000x750")
+
+    screencenter = pg.size()
+    (sx, sy) = screencenter
+
+    replybutton = getTempPosition('reply.png', consoletext)
+    sendbutton = None
+    deletebutton = getTempPosition('delete.png', consoletext)
+    confirmdeletebutton = None
+    notificationbutton = None
+
     for password in passwordlistcontent.splitlines():
-        # # Go to the current email
-        # pg.moveTo(100, 200, 0.5)
-        # pg.click()
+        # Move to center of screen
+        pg.moveTo(sx/2, sy/2, 0.05)
 
         # Go to the reply button
-        pg.moveTo(1500, 190, 0.05)
+        pg.moveTo(pg.center(replybutton))
         pg.click()
 
-        # Go to the input field
-        pg.moveTo(1000, 280, 0.05)
+        # Go to the input field (the input field is just below the reply button)
+        pg.moveTo(pg.center(replybutton))
+        pg.moveRel(0, 100, 0.05)
         pg.click()
 
         # Type the password
         pg.typewrite(password)
 
-        # Go to the send buttondelti
-        pg.moveTo(1500, 310, 0.05)
+        # Go to the send button
+        if sendbutton == None:
+            sendbutton = getTempPosition('send.png', consoletext)
+        pg.moveTo(pg.center(sendbutton))
         pg.click()
 
-        # Delete notifications
-        pg.moveTo(1550, 110, 0.35)
+        # Delete sent email notification (delete button few pixels to the right)
+        if notificationbutton == None:
+            time.sleep(1)
+            notificationbutton = getTempPosition('notification.png', consoletext)
+        pg.moveTo(pg.center(notificationbutton))
+        pg.moveRel(90, 10, 0.05)
+        # Delete 2 notifications
         for i in range(2):
+            time.sleep(0.45)
             pg.click()
-            time.sleep(0.4)
 
         # Delete current email
-        pg.moveTo(1540, 190, 0.05)
+        time.sleep(0.25)
+        pg.moveTo(pg.center(deletebutton))
         pg.click()
 
         # Click confirm delete button
-        pg.moveTo(760, 580, 0.05)
+        if confirmdeletebutton == None:
+            confirmdeletebutton = getTempPosition('confdelete.png', consoletext)
+        pg.moveTo(pg.center(confirmdeletebutton))
         pg.click()
 
-        # Delete deleted email notification
-        pg.moveTo(1550, 110, 0.35)
+        # Delete one more notification
+        time.sleep(0.25)
+        pg.moveTo(pg.center(notificationbutton))
+        pg.moveRel(90, 10, 0.05)
         pg.click()
-    
+
     # Send the notification
     notification = tk.Toplevel(window)
     notification.title("Mail Sending Finished")
@@ -182,6 +221,8 @@ def main():
     return 0
 
 if __name__ == "__main__":
+    print("Grey Hack Auto Mission\nVersion 1.0\nMade by bobrossrtx\n2023 © bobrossrtx\n")
+    print("Screen Resolution: " + str(pg.size()))
     main()
     window.config(menu=menu)
     window.mainloop()
